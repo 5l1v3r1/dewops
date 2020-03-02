@@ -2,6 +2,8 @@ FROM golang:1.12.0-alpine3.9
 # We create an /app directory within our
 # image that will hold our application source
 # files
+RUN apk add --update git
+
 RUN mkdir /app
 # We copy everything in the root directory
 # into our /app directory
@@ -12,6 +14,7 @@ ADD . /app
 WORKDIR /app
 # we run go build to compile the binary
 # executable of our Go program
+RUN go get github.com/streadway/amqp
 RUN go build -o main .
 # Our start command which kicks off
 # our newly created binary executable

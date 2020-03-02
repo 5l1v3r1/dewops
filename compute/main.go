@@ -3,9 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/streadway/amqp"
-	"html"
 	"log"
-	"net/http"
 )
 
 func failOnError(err error, msg string) {
@@ -26,14 +24,36 @@ func main() {
 	// Make sure we close the channel whenever the program is about to exit.
 	defer ch.Close()
 
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "Hello, %q", html.EscapeString(r.URL.Path))
-	})
+	// Subscribe to the queue.
+	msgs, err := ch.Consume(
+		"work_queue", // queue
+		"",           // consumer id - empty means a random, unique id will be assigned
+		false,        // auto acknowledgement of message delivery
+		false,
+		false,
+		false,
+		nil,
+	)
+	failOnError(err, "Failed to register as a consumer")
 
-	http.HandleFunc("/hi", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "Hi")
-	})
+	forever := make(chan bool)
 
-	log.Fatal(http.ListenAndServe(":8081", nil))
+	go func() {
+		for d := range msgs {
+			log.Printf("Received message: %s", d.Body)
 
+			// Update the user's data on the service's
+			// associated datastore using a local transaction...
+
+			// The 'false' indicates the success of a single delivery, 'true' would
+			// mean that this delivery and all prior unacknowledged deliveries on this
+			// channel will be acknowledged, which I find no reason for in this example.
+			d.Ack(false)
+		}
+	}()
+
+	fmt.Println("Service listening for events...")
+
+	// Block until 'forever' receives a value, which will never happen.
+	<-forever
 }
