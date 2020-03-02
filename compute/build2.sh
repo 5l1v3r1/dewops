@@ -1,1 +1,0 @@
-docker run -p 8081:8081 --network="testing" --name server2 -it server
