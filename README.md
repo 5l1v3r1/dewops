@@ -2,7 +2,9 @@
 
 Decentralized word processing system. 
 Client/Server model with decentralized nodes.
-Leader is elected using RAFT. Leader communicates with client.
+Leader is elected using RAFT. Leader communicates with client. <br>
+
+Work splitting and work result communication are done via RabbitMQ.
 
 ### Version: _0.0.1 Abant_
 Input as a text document. <br>
