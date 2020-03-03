@@ -6,14 +6,7 @@ import (
 	"log"
 )
 
-func failOnError(err error, msg string) {
-	if err != nil {
-		// Exit the program.
-		panic(fmt.Sprintf("%s: %s", msg, err))
-	}
-}
-
-func main() {
+func listenWorkQueue(server *Server) {
 	conn, err := amqp.Dial("amqp://guest:guest@172.18.0.2:5672/")
 	failOnError(err, "Error connecting to the broker")
 	// Make sure we close the connection whenever the program is about to exit.
@@ -42,12 +35,8 @@ func main() {
 		for d := range msgs {
 			log.Printf("Received message: %s", d.Body)
 
-			// Update the user's data on the service's
-			// associated datastore using a local transaction...
+			close(forever)
 
-			// The 'false' indicates the success of a single delivery, 'true' would
-			// mean that this delivery and all prior unacknowledged deliveries on this
-			// channel will be acknowledged, which I find no reason for in this example.
 			d.Ack(false)
 		}
 	}()
