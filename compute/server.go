@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"time"
 )
 
@@ -27,8 +26,18 @@ func main() {
 		electionTimeout:  *createRandomTimeout(150, 300, time.Millisecond),
 		heartbeatTimeout: *createRandomTimeout(150, 300, time.Millisecond),
 	}
-	fmt.Println(server.state)
-	fmt.Println(server.term)
-	fmt.Println(server.electionTimeout.period)
-	fmt.Println(server.heartbeatTimeout.period)
+
+	for {
+		switch server.state {
+		case FOLLOWER:
+			listenWorkQueue(server)
+			server.state = LEADER
+			break
+		case CANDIDATE:
+			break
+		case LEADER:
+			clientCommunication(server)
+			break
+		}
+	}
 }
