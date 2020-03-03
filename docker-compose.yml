@@ -4,6 +4,7 @@ services:
   rabbitmq:
     container_name: rabbitmqserver
     image: rabbitmq:3.7-management-alpine
+    restart: on-failure
     networks:
       testing_net:
         ipv4_address: 172.18.0.2
@@ -14,6 +15,7 @@ services:
   mqsetup:
     container_name: mq
     image: mq
+    restart: on-failure
     depends_on:
        - rabbitmq
     networks:
@@ -23,6 +25,7 @@ services:
   server1:
     container_name: server1
     image: server
+    restart: on-failure
     depends_on:
       - mqsetup
     networks:
@@ -34,6 +37,7 @@ services:
   server2:
     container_name: server2
     image: server
+    restart: on-failure
     depends_on:
       - mqsetup
     networks:
@@ -45,6 +49,7 @@ services:
   server3:
     container_name: server3
     image: server
+    restart: on-failure
     depends_on:
       - mqsetup
     networks:
