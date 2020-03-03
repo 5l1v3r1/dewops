@@ -21,6 +21,12 @@ func createTimeout(period time.Duration) *Timeout {
 	return &Timeout{period, *time.NewTicker(period)}
 }
 
+func createRandomTimeout(lower int, upper int, period time.Duration) *Timeout {
+	randomInt := generateRandomInt(lower, upper)
+	period = time.Duration(randomInt) * period
+	return createTimeout(period)
+}
+
 func generateRandomInt(lower int, upper int) int {
 	l := int64(lower)
 	u := int64(upper)
@@ -30,10 +36,4 @@ func generateRandomInt(lower int, upper int) int {
 		log.Fatalf("Couldn't generate random int!")
 	}
 	return int(l + r.Int64())
-}
-
-func createRandomTimeout(lower int, upper int, period time.Duration) *Timeout {
-	randomInt := generateRandomInt(lower, upper)
-	period = time.Duration(randomInt) * period
-	return createTimeout(period)
 }
