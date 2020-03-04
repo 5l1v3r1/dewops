@@ -30,7 +30,7 @@ func main() {
 	for {
 		switch server.state {
 		case FOLLOWER:
-			listenWorkQueue(server)
+			listenQueues(server)
 			break
 		case CANDIDATE:
 			break
