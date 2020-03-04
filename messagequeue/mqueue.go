@@ -1,4 +1,4 @@
-package messagequeue
+package main
 
 import (
 	"fmt"
@@ -8,9 +8,9 @@ import (
 )
 
 type QueueDef struct {
-	exchange string
-	queue    string
-	binding  string
+	Exchange string
+	Queue    string
+	Binding  string
 }
 
 func Connect(url string) *amqp.Connection {
@@ -46,7 +46,7 @@ func DeclareQueue(channel *amqp.Channel, def QueueDef) {
 	// queue is only relevant to the consumer, which subscribes to it.
 	// Like the exchange, let's make it durable (saved to disk) too.
 	q, err := channel.QueueDeclare(
-		def.queue, // name - empty means a random, unique name will be assigned
+		def.Queue, // name - empty means a random, unique name will be assigned
 		true,      // durable
 		false,     // delete when the last consumer unsubscribe
 		false,
@@ -58,8 +58,8 @@ func DeclareQueue(channel *amqp.Channel, def QueueDef) {
 	// Bind the queue to the exchange based on a string pattern (binding key).
 	err = channel.QueueBind(
 		q.Name,       // queue name
-		def.binding,  // binding key
-		def.exchange, // exchange
+		def.Binding,  // binding key
+		def.Exchange, // exchange
 		false,
 		nil,
 	)
