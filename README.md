@@ -20,7 +20,3 @@ Work splitting and work result communication are done via RabbitMQ.
 Input as a text document. <br>
 Split the data across multiple nodes. <br>
 Process data and return **word count** to the user.
-
-
-### Inspiration
-Inspired by Apache Spark and Apache Hadoop.
