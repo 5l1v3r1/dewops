@@ -12,16 +12,6 @@ services:
       - '15672:15672'
       - '5672:5672'
 
-  mqsetup:
-    container_name: mq
-    image: mq
-    restart: on-failure
-    depends_on:
-      - rabbitmq
-    networks:
-      testing_net:
-        ipv4_address: 172.18.0.3
-
   loadbalancer:
     container_name: loadbalancer
     image: loadbalancer
@@ -39,7 +29,7 @@ services:
     image: server
     restart: on-failure
     depends_on:
-      - mqsetup
+      - rabbitmq
     networks:
       testing_net:
         ipv4_address: 172.18.1.1
@@ -51,7 +41,7 @@ services:
     image: server
     restart: on-failure
     depends_on:
-      - mqsetup
+      - rabbitmq
     networks:
       testing_net:
         ipv4_address: 172.18.1.2
@@ -63,7 +53,7 @@ services:
     image: server
     restart: on-failure
     depends_on:
-      - mqsetup
+      - rabbitmq
     networks:
       testing_net:
         ipv4_address: 172.18.1.3
