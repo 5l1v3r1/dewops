@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+
+package proto;
+
+service SendHeartbeat {
+    rpc SendHeartbeat (google.protobuf.Empty) returns (google.protobuf.Empty);
+}

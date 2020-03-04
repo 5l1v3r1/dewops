@@ -31,12 +31,11 @@ func main() {
 		switch server.state {
 		case FOLLOWER:
 			listenWorkQueue(server)
-			server.state = LEADER
 			break
 		case CANDIDATE:
 			break
 		case LEADER:
-			clientCommunication(server)
+			LBCommunication(server)
 			break
 		}
 	}

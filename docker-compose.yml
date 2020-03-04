@@ -17,17 +17,29 @@ services:
     image: mq
     restart: on-failure
     depends_on:
-       - rabbitmq
+      - rabbitmq
     networks:
       testing_net:
         ipv4_address: 172.18.0.3
+
+  loadbalancer:
+    container_name: loadbalancer
+    image: loadbalancer
+    restart: on-failure
+    depends_on:
+      - rabbitmq
+    networks:
+      testing_net:
+        ipv4_address: 172.18.50.50
+    ports:
+      - '8080:8080'
 
   server1:
     container_name: server1
     image: server
     restart: on-failure
     depends_on:
-      - mqsetup
+      - rabbitmq
     networks:
       testing_net:
         ipv4_address: 172.18.1.1
@@ -40,7 +52,7 @@ services:
     image: server
     restart: on-failure
     depends_on:
-      - mqsetup
+      - rabbitmq
     networks:
       testing_net:
         ipv4_address: 172.18.1.2
@@ -52,7 +64,7 @@ services:
     image: server
     restart: on-failure
     depends_on:
-      - mqsetup
+      - rabbitmq
     networks:
       testing_net:
         ipv4_address: 172.18.1.3

@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+
+package proto;
+
+message Leader {
+    string name = 1;
+}
+
+service WhoIsLeader {
+    rpc ShowLeader (Leader) returns (google.protobuf.Empty);
+}
+
+message Result {
+    string json = 1;
+}
+
+service SendResult {
+    rpc SendResult (Result) returns (google.protobuf.Empty);
+}
