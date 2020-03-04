@@ -8,8 +8,7 @@ Work splitting and work result communication are done via RabbitMQ.
 
 ### Run
 `$ docker pull rabbitmq:3.7-management-alpine` <br>
-`$ ./compute/build.sh` <br>
-`$ ./MQ/build.sh` <br>
+`$ ./build.sh` <br>
 `$ docker-compose -f docker-compose.yml up -d` <br>
 
 ### Stop
