@@ -7,10 +7,9 @@ import (
 )
 
 func main() {
-	listenLeaderQueue()
-
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Hello")
+		listenLeaderQueue()
 	})
 
 	log.Fatal(http.ListenAndServe(":8080", nil))
@@ -26,14 +25,19 @@ func listenLeaderQueue() {
 	defer ch.Close()
 
 	// Subscribe to the queue.
-	CreateAndSubscribeQueue(ch, QueueDef{
+	leaderMsgs := CreateAndSubscribeQueue(ch, QueueDef{
 		Exchange: "leaderq",
 		Queue:    "leaderq",
 		Binding:  "leaderq",
-	}, LEADERQ, "topic")
+	}, "topic")
 
-	forever := make(chan bool)
-	<-forever
+	go func() {
+		for d := range leaderMsgs {
+			log.Printf("Received message: %s", d.Body)
+		}
+	}()
+
+	fmt.Println("Service listening for events...")
 }
 
 /*https://softwareengineering.stackexchange.com/questions/312956/what-does-a-load-balancer-return
