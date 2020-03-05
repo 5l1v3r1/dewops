@@ -59,6 +59,29 @@ services:
         ipv4_address: 172.18.1.3
     ports:
       - '8083:8081'
+  server4:
+    container_name: server4
+    image: server
+    restart: on-failure
+    depends_on:
+      - rabbitmq
+    networks:
+      testing_net:
+        ipv4_address: 172.18.1.4
+    ports:
+      - '8084:8081'
+
+  server5:
+    container_name: server5
+    image: server
+    restart: on-failure
+    depends_on:
+      - rabbitmq
+    networks:
+      testing_net:
+        ipv4_address: 172.18.1.5
+    ports:
+      - '8085:8081'
 
 networks:
   testing_net:
