@@ -21,7 +21,7 @@ type Server struct {
 
 func main() {
 	server := &Server{
-		state:            FOLLOWER,
+		state:            LEADER,
 		term:             0,
 		electionTimeout:  *createRandomTimeout(150, 300, time.Millisecond),
 		heartbeatTimeout: *createRandomTimeout(150, 300, time.Millisecond),
@@ -35,7 +35,7 @@ func main() {
 		case CANDIDATE:
 			break
 		case LEADER:
-			LBCommunication(server)
+			listenResultQueue(server)
 			break
 		}
 	}
