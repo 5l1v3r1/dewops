@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/streadway/amqp"
 	"log"
+	"net"
 	"strings"
 )
 
@@ -113,6 +114,32 @@ func ListenQueue(msgs <-chan amqp.Delivery, qn QueueName) {
 	}()
 
 	fmt.Println("Service listening for events...")
+}
+
+func CreateAndSubscribeQueue(ch *amqp.Channel, def QueueDef, qn QueueName, exchangeType string) {
+	DeclareExchange(ch, def.Exchange, exchangeType)
+	DeclareQueue(ch, def)
+
+	// Subscribe to the queue.
+	msgs := Subscribe(ch, def.Queue)
+	ListenQueue(msgs, qn)
+}
+
+// local ip is used for generating unique queue names for each service
+func GetLocalIP() string {
+	addrs, err := net.InterfaceAddrs()
+	if err != nil {
+		return ""
+	}
+	for _, address := range addrs {
+		// check the address type and if it is not a loopback the display it
+		if ipnet, ok := address.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
+			if ipnet.IP.To4() != nil {
+				return ipnet.IP.String()
+			}
+		}
+	}
+	return ""
 }
 
 func failOnError(err error, msg string) {
