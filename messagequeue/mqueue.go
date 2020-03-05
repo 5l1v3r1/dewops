@@ -1,20 +1,9 @@
 package main
 
 import (
-	"fmt"
 	"github.com/streadway/amqp"
 	"log"
 	"net"
-	"strings"
-)
-
-type QueueName uint
-
-const (
-	WORKERQ QueueName = iota
-	ELECTIONQ
-	RESULTQ
-	LEADERQ
 )
 
 type QueueDef struct {
@@ -92,37 +81,12 @@ func Subscribe(ch *amqp.Channel, qname string) <-chan amqp.Delivery {
 	return messages
 }
 
-func ListenQueue(msgs <-chan amqp.Delivery, qn QueueName) {
-	go func() {
-		for d := range msgs {
-			log.Printf("Received message: %s", d.Body)
-			if strings.Contains(string(d.Body), "stop") {
-				break
-			}
-			if qn == WORKERQ {
-				log.Printf("This is workerq")
-			} else if qn == ELECTIONQ {
-				log.Printf("This is electionq")
-			} else if qn == RESULTQ {
-				log.Printf("This is resultq")
-			} else if qn == LEADERQ {
-				log.Printf("This is leaderq")
-			}
-
-			d.Ack(false)
-		}
-	}()
-
-	fmt.Println("Service listening for events...")
-}
-
-func CreateAndSubscribeQueue(ch *amqp.Channel, def QueueDef, qn QueueName, exchangeType string) {
+func CreateAndSubscribeQueue(ch *amqp.Channel, def QueueDef, exchangeType string) <-chan amqp.Delivery {
 	DeclareExchange(ch, def.Exchange, exchangeType)
 	DeclareQueue(ch, def)
 
 	// Subscribe to the queue.
-	msgs := Subscribe(ch, def.Queue)
-	ListenQueue(msgs, qn)
+	return Subscribe(ch, def.Queue)
 }
 
 // local ip is used for generating unique queue names for each service
