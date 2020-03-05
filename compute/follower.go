@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/streadway/amqp"
 	"net"
 )
 
@@ -14,22 +15,37 @@ func listenQueues(server *Server) {
 	defer ch.Close()
 
 	ip := GetLocalIP()
-	workQ := QueueDef{
-		Exchange: ip,
-		Queue:    ip + "_work",
-		Binding:  ip,
-	}
-	DeclareExchange(ch, GetLocalIP())
-	DeclareQueue(ch, workQ)
 
-	// Subscribe to the queue.
-	msgs := Subscribe(ch, workQ.Queue)
-	ListenQueue(msgs)
+	// work queue
+	work := ip + "_work"
+	createAndSubscribeQueue(ch, QueueDef{
+		Exchange: work,
+		Queue:    work,
+		Binding:  work,
+	}, WORKERQ, "topic")
+
+	// election queue
+	elect := ip + "_election"
+	createAndSubscribeQueue(ch, QueueDef{
+		Exchange: elect,
+		Queue:    elect,
+		Binding:  elect,
+	}, ELECTIONQ, "fanout")
 
 	forever := make(chan bool)
 	<-forever
 }
 
+func createAndSubscribeQueue(ch *amqp.Channel, def QueueDef, qn QueueName, exchangeType string) {
+	DeclareExchange(ch, def.Exchange, exchangeType)
+	DeclareQueue(ch, def)
+
+	// Subscribe to the queue.
+	msgs := Subscribe(ch, def.Queue)
+	ListenQueue(msgs, qn)
+}
+
+// local ip is used for generating unique queue names for each service
 func GetLocalIP() string {
 	addrs, err := net.InterfaceAddrs()
 	if err != nil {

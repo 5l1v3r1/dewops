@@ -7,6 +7,15 @@ import (
 	"strings"
 )
 
+type QueueName uint
+
+const (
+	WORKERQ QueueName = iota
+	ELECTIONQ
+	RESULTQ
+	LEADERQ
+)
+
 type QueueDef struct {
 	Exchange string
 	Queue    string
@@ -25,11 +34,11 @@ func GetChannel(connection *amqp.Connection) *amqp.Channel {
 	return channel
 }
 
-func DeclareExchange(channel *amqp.Channel, exchangeName string) {
+func DeclareExchange(channel *amqp.Channel, exchangeName string, exchangeType string) {
 	// Create the exchange if it doesn't already exist.
 	err := channel.ExchangeDeclare(
 		exchangeName, // name
-		"topic",      // type
+		exchangeType, // type
 		true,         // durable
 		false,
 		false,
@@ -82,12 +91,21 @@ func Subscribe(ch *amqp.Channel, qname string) <-chan amqp.Delivery {
 	return messages
 }
 
-func ListenQueue(msgs <-chan amqp.Delivery) {
+func ListenQueue(msgs <-chan amqp.Delivery, qn QueueName) {
 	go func() {
 		for d := range msgs {
 			log.Printf("Received message: %s", d.Body)
 			if strings.Contains(string(d.Body), "stop") {
 				break
+			}
+			if qn == WORKERQ {
+				log.Printf("This is workerq")
+			} else if qn == ELECTIONQ {
+				log.Printf("This is electionq")
+			} else if qn == RESULTQ {
+				log.Printf("This is resultq")
+			} else if qn == LEADERQ {
+				log.Printf("This is leaderq")
 			}
 
 			d.Ack(false)
