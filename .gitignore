@@ -28,3 +28,6 @@
 *.test
 
 .DS_Store
+
+loadbalancer/mqueue.go
+compute/mqueue.go
