@@ -1,4 +1,4 @@
-# ahtapod
+# dewops
 
 Decentralized word processing system. 
 Client/Server model with decentralized nodes.
